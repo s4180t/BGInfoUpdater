@@ -18,34 +18,6 @@ A Windows application that automatically updates your desktop background with sy
 - [.NET 8.0 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [BGInfo from Microsoft Sysinternals](https://learn.microsoft.com/en-us/sysinternals/downloads/bginfo)
 
-## Project Structure
-
-### Source Code
-
-```plaintext
-├── Program.cs              # Main application source
-├── BGInfoUpdater.csproj    # Project file
-├── BGInfoUpdater.sln       # Solution file
-├── README.md               # This documentation
-└── scripts/
-    └── setup-autostart.ps1 # PowerShell script for automatic startup
-```
-
-### Runtime Structure (After Installation)
-
-```plaintext
-├── BGInfoUpdater.exe       # Main application executable
-├── setup-autostart.ps1     # PowerShell script for automatic startup
-├── config.bgi              # BGInfo configuration file (create manually)
-├── BGInfo/                 # Directory for BGInfo executables
-│   └── Bginfo64.exe        # BGInfo executable (download separately)
-└── bginfo_temp/            # Directory for temporary data files
-    ├── ip.txt              # Current IP information
-    ├── lastupdated.txt     # Timestamp of last update
-    ├── location.txt        # Geographic location data
-    └── org.txt             # Organization information
-```
-
 ## Installation
 
 1. **Install Prerequisites**
@@ -73,52 +45,20 @@ A Windows application that automatically updates your desktop background with sy
 
 ## How It Works
 
-1. The application runs in the background and performs these actions every 5 minutes:
-   - Retrieves your current IP address information
-   - Updates location data based on IP
-   - Gathers organizational information
-   - Updates timestamp
-   - Calls BGInfo to refresh your desktop background
-
-2. All temporary data is stored in the `bginfo_temp` folder:
-   - `ip.txt`: Contains current IP address information
-   - `lastupdated.txt`: Timestamp of the last successful update
-   - `location.txt`: Geographic location information
-   - `org.txt`: Organization details
+The application runs in the background and updates your desktop every 5 minutes with current system information including IP address, location, and organization details.
 
 ## Configuration
 
-The `config.bgi` file contains the BGInfo display configuration. This defines:
-
-- What information is displayed
-- Where it appears on the desktop
-- Formatting and styling
-
-### Creating config.bgi
-
-The `config.bgi` file must be created manually. Follow these steps to create it:
+Create a `config.bgi` file using BGInfo's configuration tool:
 
 1. Run `BGInfo\Bginfo64.exe` directly
 2. Configure the layout and built-in fields as desired
-3. Add these custom fields (File > New Field for each):
-   - **IP Address**:
-     - Field name: `ip`
-     - Type: File
-     - File path: `bginfo_temp\ip.txt`
-   - **Location**:
-     - Field name: `location`
-     - Type: File
-     - File path: `bginfo_temp\location.txt`
-   - **Organization**:
-     - Field name: `org`
-     - Type: File
-     - File path: `bginfo_temp\org.txt`
-   - **Last Updated**:
-     - Field name: `lastupdated`
-     - Type: File
-     - File path: `bginfo_temp\lastupdated.txt`
-4. Position the fields on your layout as desired
-5. Click File > Save As... and save as `config.bgi` in the main application directory
+3. Add custom fields (File > New Field for each):
+   - **IP Address**: Field name `ip`, Type: File, Path: `bginfo_temp\ip.txt`
+   - **Location**: Field name `location`, Type: File, Path: `bginfo_temp\location.txt`
+   - **Organization**: Field name `org`, Type: File, Path: `bginfo_temp\org.txt`
+   - **Last Updated**: Field name `lastupdated`, Type: File, Path: `bginfo_temp\lastupdated.txt`
+4. Position fields and save as `config.bgi` in the main application directory
 
 ## Troubleshooting
 
@@ -134,29 +74,17 @@ The `config.bgi` file must be created manually. Follow these steps to create it:
 
 3. **Desktop Background Not Changing**
    - Verify you have permissions to change desktop background
-   - Check if you have created the config.bgi file in the correct location
-   - Verify all required custom fields are properly configured in config.bgi
-   - Ensure BGInfo64.exe is properly installed
-
-## Network Requirements
-
-- Outbound internet access is required for IP and location information
-- The following directories must be writable:
-  - `bginfo_temp` directory
-  - Directory containing `config.bgi`
+   - Ensure the `config.bgi` file exists with properly configured custom fields
+   - Verify BGInfo64.exe is properly installed
 
 ## Building from Source
-
-If you're building from source:
 
 1. Clone the repository
 2. Open `BGInfoUpdater.sln` in Visual Studio
 3. Build the solution
-4. Copy required files to deployment directory:
-   - All files from `bin/Release/net8.0`
-   - `setup-autostart.ps1`
+4. Copy files from `bin/Release/net8.0` and `setup-autostart.ps1` to deployment directory
 
-Note: The `config.bgi` file must be created manually and is not included in the deployment.
+Note: Create the `config.bgi` file manually after deployment.
 
 ## License
 
