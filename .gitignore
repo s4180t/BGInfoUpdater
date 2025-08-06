@@ -19,8 +19,7 @@
 deployment/
 
 # BGInfo files and temporary files
-BGInfo/
-**/BGInfo/
+/BGInfo/
 bginfo_temp/
 **/bginfo_temp/
 

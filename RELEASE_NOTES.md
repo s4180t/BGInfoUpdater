@@ -13,10 +13,14 @@ First official release of BGInfoUpdater!
 
 ## Installation
 
-1. Download the `BGInfoUpdater.zip` from this release
-2. Extract the contents to your desired location
-3. Run `setup-autostart.ps1` with administrator privileges to set up automatic startup
-4. Create a `config.bgi` file using BGInfo configuration tool (see README for details)
+1. Download and install BGInfo from Microsoft Sysinternals:
+   - Visit [Microsoft Sysinternals BGInfo](https://learn.microsoft.com/en-us/sysinternals/downloads/bginfo)
+   - Accept the license terms
+   - Download and extract BGInfo to the `BGInfo` folder in the installation directory
+2. Download the `BGInfoUpdater.zip` from this release
+3. Extract the contents to your desired location
+4. Run `setup-autostart.ps1` with administrator privileges to set up automatic startup
+5. Create a `config.bgi` file using BGInfo configuration tool (see README for details)
 
 ## Requirements
 
