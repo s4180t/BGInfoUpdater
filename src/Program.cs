@@ -359,7 +359,8 @@ class Program
                 {
                     using (var fs = new FileStream(_originalWallpaperPath, FileMode.Open, FileAccess.Read))
                     {
-                        var image = new Bitmap(Image.FromStream(fs));
+                        using var tempImage = Image.FromStream(fs);
+                        var image = new Bitmap(tempImage);
                         DebugLog($"Successfully loaded wallpaper using stream: {_originalWallpaperPath}");
                         return image;
                     }
