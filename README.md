@@ -1,5 +1,10 @@
 # BGInfoUpdater
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)](https://www.microsoft.com/windows)
+[![GitHub release](https://img.shields.io/github/v/release/s4180t/BGInfoUpdater)](https://github.com/s4180t/BGInfoUpdater/releases)
+
 A Windows application that automatically updates your desktop background with system information using Sysinternals BGInfo.
 
 ## Features
