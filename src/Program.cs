@@ -65,9 +65,9 @@ class Program
                 File.WriteAllText(lastUpdatedFile, lastUpdated, Encoding.UTF8);
                 RunBgInfo(bginfoExe, bginfoBgi);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Optionally log error
+                // Optionally log error - silently continue on any errors
             }
             await Task.Delay(TimeSpan.FromMinutes(5));
         }
