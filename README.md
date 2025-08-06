@@ -170,4 +170,4 @@ For issues, questions, or contributions:
 
 - [Create an issue on GitHub](https://github.com/s4180t/BGInfoUpdater/issues)
 - [View the project repository](https://github.com/s4180t/BGInfoUpdater)
-- [Check existing discussions](https://github.com/s4180t/BGInfoUpdater/discussions)
+- [Submit pull requests](https://github.com/s4180t/BGInfoUpdater/pulls)
