@@ -168,6 +168,6 @@ Note: This project uses BGInfo from Microsoft Sysinternals which is licensed sep
 
 For issues, questions, or contributions:
 
-- [Create an issue in the repository]
-- [Contact information]
-- [Additional support resources]
+- [Create an issue on GitHub](https://github.com/s4180t/BGInfoUpdater/issues)
+- [View the project repository](https://github.com/s4180t/BGInfoUpdater)
+- [Check existing discussions](https://github.com/s4180t/BGInfoUpdater/discussions)
