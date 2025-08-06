@@ -150,7 +150,7 @@ The `config.bgi` file must be created manually. Follow these steps to create it:
 If you're building from source:
 
 1. Clone the repository
-2. Open `BgInfoConsole.sln` in Visual Studio
+2. Open `BGInfoUpdater.sln` in Visual Studio
 3. Build the solution
 4. Copy required files to deployment directory:
    - All files from `bin/Release/net8.0`
