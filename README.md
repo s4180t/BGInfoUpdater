@@ -156,8 +156,9 @@ The `package-deployment.ps1` script can be used to create a deployment package. 
 
 ## License
 
-- This project is available under [specify your license]
-- BGInfo is a part of Windows Sysinternals by Microsoft and has its own license terms
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Note: This project uses BGInfo from Microsoft Sysinternals which is licensed separately under Microsoft's Sysinternals Software License Terms.
 
 ## Support
 

@@ -2,6 +2,12 @@
 
 First official release of BGInfoUpdater!
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Note: This project uses BGInfo from Microsoft Sysinternals which is licensed separately under Microsoft's Sysinternals Software License Terms.
+
 ## Features
 
 - Automatic system information updates every 5 minutes
