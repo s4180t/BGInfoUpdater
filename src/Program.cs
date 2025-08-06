@@ -234,8 +234,6 @@ class Program
         try
         {
             // Draw system information on the final image
-            using (Graphics graphics = Graphics.FromImage(finalImage))
-            // Draw system information on the final image
             using (Graphics g = Graphics.FromImage(finalImage))
             {
                 g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
@@ -251,11 +249,9 @@ class Program
                 baseTitleSize = Math.Max(baseTitleSize, 14f);
                 baseInfoSize = Math.Max(baseInfoSize, 10f);
                 
-                // Define fonts and brushes with screen-based sizing
+                // Define fonts with screen-based sizing
                 using (Font titleFont = new Font("Segoe UI", baseTitleSize, FontStyle.Bold))
                 using (Font infoFont = new Font("Segoe UI", baseInfoSize, FontStyle.Regular))
-                using (Brush textBrush = new SolidBrush(Color.White))
-                using (Brush shadowBrush = new SolidBrush(Color.Black))
                 {
                     // Simple bottom-right positioning (image is now at screen resolution)
                     string[] lines = {
@@ -292,8 +288,14 @@ class Program
                     
                     // Draw a subtle semi-transparent background for readability
                     RectangleF backgroundRect = new RectangleF(startX - 20, startY - 15, maxWidth + 40, totalHeight + 30);
-                    g.FillRectangle(new SolidBrush(Color.FromArgb(180, 0, 0, 0)), backgroundRect); // Semi-transparent black
-                    g.DrawRectangle(new Pen(Color.FromArgb(120, 255, 255, 255), 2), Rectangle.Round(backgroundRect)); // Subtle white border
+                    using (var backgroundBrush = new SolidBrush(Color.FromArgb(180, 0, 0, 0)))
+                    {
+                        g.FillRectangle(backgroundBrush, backgroundRect);
+                    }
+                    using (var borderPen = new Pen(Color.FromArgb(120, 255, 255, 255), 2))
+                    {
+                        g.DrawRectangle(borderPen, Rectangle.Round(backgroundRect));
+                    }
                     
                     // Draw text with white color for contrast against dark background
                     float currentY = startY;
@@ -301,13 +303,13 @@ class Program
                     {
                         Font font = i == 0 ? titleFont : infoFont;
                         
-                        // Use white text on dark background
-                        Brush brush = new SolidBrush(Color.White);
-                        g.DrawString(lines[i], font, brush, startX, currentY);
+                        // Use white text on dark background with proper disposal
+                        using (var brush = new SolidBrush(Color.White))
+                        {
+                            g.DrawString(lines[i], font, brush, startX, currentY);
+                        }
                         
                         currentY += lineSizes[i].Height + (i == 0 ? 12 : 4); // More space after title
-                        
-                        brush.Dispose();
                     }
                 }
             }
