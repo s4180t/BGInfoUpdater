@@ -1,0 +1,58 @@
+name: .NET Build and Release
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+      
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --configuration Release
+      
+    - name: Publish
+      if: github.event_name == 'release'
+      run: dotnet publish --configuration Release --output ./publish
+      
+    - name: Copy additional files
+      if: github.event_name == 'release'
+      run: |
+        Copy-Item -Path ".\BGInfo\*" -Destination ".\publish\BGInfo\" -Recurse -Force
+        Copy-Item ".\setup-autostart.ps1" -Destination ".\publish\" -Force
+        Copy-Item ".\README.md" -Destination ".\publish\README.txt" -Force
+      shell: pwsh
+      
+    - name: Create ZIP archive
+      if: github.event_name == 'release'
+      run: Compress-Archive -Path ".\publish\*" -DestinationPath ".\BGInfoUpdater.zip"
+      shell: pwsh
+      
+    - name: Upload build artifacts
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./BGInfoUpdater.zip
+        asset_name: BGInfoUpdater.zip
+        asset_content_type: application/zip
