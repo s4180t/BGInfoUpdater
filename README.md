@@ -158,14 +158,6 @@ If you're building from source:
 
 Note: The `config.bgi` file must be created manually and is not included in the deployment.
 
-## Deployment
-
-The `package-deployment.ps1` script can be used to create a deployment package. The deployment package will include:
-
-- All necessary application files
-- Configuration files
-- Startup scripts
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
