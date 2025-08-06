@@ -8,6 +8,13 @@
     <AssemblyName>BGInfoUpdater</AssemblyName>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Version>1.0.0</Version>
+    <AssemblyTitle>BGInfo Updater</AssemblyTitle>
+    <AssemblyDescription>Automatically updates desktop background with system information using BGInfo</AssemblyDescription>
+    <AssemblyCompany>Open Source</AssemblyCompany>
+    <AssemblyProduct>BGInfoUpdater</AssemblyProduct>
+    <AssemblyCopyright>Copyright © 2025 Vitalii Komar</AssemblyCopyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
