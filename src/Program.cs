@@ -146,7 +146,6 @@ class Program
         try
         {
             string outputPath = Path.Combine(tempFolder, "wallpaper_with_info.bmp");
-            Bitmap? backgroundImage = null;
             
             // Load stored original wallpaper path from file
             LoadOriginalWallpaperPath();
@@ -165,99 +164,81 @@ class Program
                 }
             }
             
-            // Try to load the original wallpaper
-            if (!string.IsNullOrEmpty(_originalWallpaperPath) && File.Exists(_originalWallpaperPath))
+            // Load background image with proper disposal
+            using (Bitmap backgroundImage = LoadBackgroundImage())
             {
-                try
+                // Get actual screen resolution for all calculations
+                var (finalScreenWidth, finalScreenHeight) = GetActualScreenResolution();
+                
+                // If the background image is larger than screen, we need to resize it to screen resolution
+                // so Windows displays it correctly without cropping
+                Bitmap finalImage;
+                if (backgroundImage.Width != finalScreenWidth || backgroundImage.Height != finalScreenHeight)
                 {
-                    // Try to load the wallpaper regardless of extension (TranscodedWallpaper has no extension)
-                    backgroundImage = new Bitmap(_originalWallpaperPath);
-                    DebugLog($"Successfully loaded original wallpaper: {_originalWallpaperPath}");
-                }
-                catch (Exception ex)
-                {
-                    DebugLog($"Failed to load original wallpaper: {ex.Message}");
-                    // Try loading as different formats
-                    try
-                    {
-                        using (var fs = new FileStream(_originalWallpaperPath, FileMode.Open, FileAccess.Read))
-                        {
-                            backgroundImage = new Bitmap(Image.FromStream(fs));
-                            DebugLog($"Successfully loaded wallpaper using stream: {_originalWallpaperPath}");
-                        }
-                    }
-                    catch (Exception ex2)
-                    {
-                        DebugLog($"Failed to load wallpaper using stream: {ex2.Message}");
-                    }
-                }
-            }
-            
-            // If we couldn't load the original wallpaper, create a default one
-            if (backgroundImage == null)
-            {
-                var (screenWidth, screenHeight) = GetActualScreenResolution();
-                backgroundImage = CreateGradientBackground(screenWidth, screenHeight);
-                DebugLog("Using default background");
-            }
-            
-            // Get actual screen resolution for all calculations
-            var (finalScreenWidth, finalScreenHeight) = GetActualScreenResolution();
-            
-            // If the background image is larger than screen, we need to resize it to screen resolution
-            // so Windows displays it correctly without cropping
-            Bitmap finalImage;
-            if (backgroundImage.Width != finalScreenWidth || backgroundImage.Height != finalScreenHeight)
-            {
-                DebugLog($"Resizing wallpaper from {backgroundImage.Width}x{backgroundImage.Height} to {finalScreenWidth}x{finalScreenHeight}");
-                
-                // Calculate how Windows would display this image (fill screen, center, crop excess)
-                float scaleX = (float)finalScreenWidth / backgroundImage.Width;
-                float scaleY = (float)finalScreenHeight / backgroundImage.Height;
-                float scale = Math.Max(scaleX, scaleY); // Use larger scale to fill screen
-                
-                int scaledWidth = (int)(backgroundImage.Width * scale);
-                int scaledHeight = (int)(backgroundImage.Height * scale);
-                
-                // Calculate what area of the scaled image would be visible (center crop)
-                int cropX = (scaledWidth - finalScreenWidth) / 2;
-                int cropY = (scaledHeight - finalScreenHeight) / 2;
-                
-                // Create final image at screen resolution with the properly scaled/cropped content
-                finalImage = new Bitmap(finalScreenWidth, finalScreenHeight);
-                using (Graphics resizeGraphics = Graphics.FromImage(finalImage))
-                {
-                    resizeGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    resizeGraphics.SmoothingMode = SmoothingMode.HighQuality;
+                    DebugLog($"Resizing wallpaper from {backgroundImage.Width}x{backgroundImage.Height} to {finalScreenWidth}x{finalScreenHeight}");
                     
-                    // First scale the entire image
-                    using (Bitmap scaledImage = new Bitmap(scaledWidth, scaledHeight))
+                    // Calculate how Windows would display this image (fill screen, center, crop excess)
+                    float scaleX = (float)finalScreenWidth / backgroundImage.Width;
+                    float scaleY = (float)finalScreenHeight / backgroundImage.Height;
+                    float scale = Math.Max(scaleX, scaleY); // Use larger scale to fill screen
+                    
+                    int scaledWidth = (int)(backgroundImage.Width * scale);
+                    int scaledHeight = (int)(backgroundImage.Height * scale);
+                    
+                    // Calculate what area of the scaled image would be visible (center crop)
+                    int cropX = (scaledWidth - finalScreenWidth) / 2;
+                    int cropY = (scaledHeight - finalScreenHeight) / 2;
+                    
+                    // Create final image at screen resolution with the properly scaled/cropped content
+                    finalImage = new Bitmap(finalScreenWidth, finalScreenHeight);
+                    using (Graphics resizeGraphics = Graphics.FromImage(finalImage))
                     {
-                        using (Graphics scaleGraphics = Graphics.FromImage(scaledImage))
-                        {
-                            scaleGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                            scaleGraphics.DrawImage(backgroundImage, 0, 0, scaledWidth, scaledHeight);
-                        }
+                        resizeGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        resizeGraphics.SmoothingMode = SmoothingMode.HighQuality;
                         
-                        // Then crop the center portion to fit screen
-                        resizeGraphics.DrawImage(scaledImage,
-                            new Rectangle(0, 0, finalScreenWidth, finalScreenHeight),
-                            new Rectangle(cropX, cropY, finalScreenWidth, finalScreenHeight),
-                            GraphicsUnit.Pixel);
+                        // First scale the entire image
+                        using (Bitmap scaledImage = new Bitmap(scaledWidth, scaledHeight))
+                        {
+                            using (Graphics scaleGraphics = Graphics.FromImage(scaledImage))
+                            {
+                                scaleGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                scaleGraphics.DrawImage(backgroundImage, 0, 0, scaledWidth, scaledHeight);
+                            }
+                            
+                            // Then crop the center portion to fit screen
+                            resizeGraphics.DrawImage(scaledImage,
+                                new Rectangle(0, 0, finalScreenWidth, finalScreenHeight),
+                                new Rectangle(cropX, cropY, finalScreenWidth, finalScreenHeight),
+                                GraphicsUnit.Pixel);
+                        }
                     }
                 }
+                else
+                {
+                    // Create a copy of the background image since we're disposing the original
+                    finalImage = new Bitmap(backgroundImage);
+                }
                 
-                backgroundImage.Dispose();
+                // Process the final image with system information overlay
+                ProcessFinalImage(finalImage, ip, location, org, lastUpdated, outputPath);
             }
-            else
-            {
-                finalImage = backgroundImage;
-            }
-
+        }
+        catch (Exception ex)
+        {
+            DebugLog($"Error updating wallpaper: {ex.Message}");
+        }
+    }
+    
+    static void ProcessFinalImage(Bitmap finalImage, string ip, string location, string org, string lastUpdated, string outputPath)
+    {
+        try
+        {
             // Draw system information on the final image
             using (Graphics graphics = Graphics.FromImage(finalImage))
+            // Draw system information on the final image
+            using (Graphics g = Graphics.FromImage(finalImage))
             {
-                graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
                 
                 // Calculate font sizes based on screen resolution (not image size)
                 var (screenWidth, screenHeight) = GetActualScreenResolution();
@@ -293,7 +274,7 @@ class Program
                     for (int i = 0; i < lines.Length; i++)
                     {
                         Font font = i == 0 ? titleFont : infoFont;
-                        lineSizes[i] = graphics.MeasureString(lines[i], font);
+                        lineSizes[i] = g.MeasureString(lines[i], font);
                         maxWidth = Math.Max(maxWidth, lineSizes[i].Width);
                         totalHeight += lineSizes[i].Height + (i > 0 ? 4 : 12); // More space between lines
                     }
@@ -311,8 +292,8 @@ class Program
                     
                     // Draw a subtle semi-transparent background for readability
                     RectangleF backgroundRect = new RectangleF(startX - 20, startY - 15, maxWidth + 40, totalHeight + 30);
-                    graphics.FillRectangle(new SolidBrush(Color.FromArgb(180, 0, 0, 0)), backgroundRect); // Semi-transparent black
-                    graphics.DrawRectangle(new Pen(Color.FromArgb(120, 255, 255, 255), 2), Rectangle.Round(backgroundRect)); // Subtle white border
+                    g.FillRectangle(new SolidBrush(Color.FromArgb(180, 0, 0, 0)), backgroundRect); // Semi-transparent black
+                    g.DrawRectangle(new Pen(Color.FromArgb(120, 255, 255, 255), 2), Rectangle.Round(backgroundRect)); // Subtle white border
                     
                     // Draw text with white color for contrast against dark background
                     float currentY = startY;
@@ -322,7 +303,7 @@ class Program
                         
                         // Use white text on dark background
                         Brush brush = new SolidBrush(Color.White);
-                        graphics.DrawString(lines[i], font, brush, startX, currentY);
+                        g.DrawString(lines[i], font, brush, startX, currentY);
                         
                         currentY += lineSizes[i].Height + (i == 0 ? 12 : 4); // More space after title
                         
@@ -332,29 +313,66 @@ class Program
             }
             
             // Save the image as BMP (Windows wallpaper compatible format)
-            try
+            using (finalImage)
             {
-                finalImage.Save(outputPath, ImageFormat.Bmp);
+                try
+                {
+                    finalImage.Save(outputPath, ImageFormat.Bmp);
+                }
+                catch (Exception saveEx)
+                {
+                    DebugLog($"Error saving image: {saveEx.Message}");
+                    // Try saving with a unique filename
+                    outputPath = Path.Combine(Path.GetTempPath(), $"wallpaper_{DateTime.Now:yyyyMMdd_HHmmss}.bmp");
+                    finalImage.Save(outputPath, ImageFormat.Bmp);
+                }
+                
+                // Set as wallpaper
+                SetWallpaper(outputPath);
             }
-            catch (Exception saveEx)
-            {
-                DebugLog($"Error saving image: {saveEx.Message}");
-                // Try saving with a unique filename
-                outputPath = Path.Combine(Path.GetTempPath(), $"wallpaper_{DateTime.Now:yyyyMMdd_HHmmss}.bmp");
-                finalImage.Save(outputPath, ImageFormat.Bmp);
-            }
-            finally
-            {
-                finalImage.Dispose();
-            }
-            
-            // Set as wallpaper
-            SetWallpaper(outputPath);
         }
         catch (Exception ex)
         {
-            DebugLog($"Error updating wallpaper: {ex.Message}");
+            DebugLog($"Error processing final image: {ex.Message}");
         }
+    }
+
+    static Bitmap LoadBackgroundImage()
+    {
+        // Try to load the original wallpaper
+        if (!string.IsNullOrEmpty(_originalWallpaperPath) && File.Exists(_originalWallpaperPath))
+        {
+            try
+            {
+                // Try to load the wallpaper regardless of extension (TranscodedWallpaper has no extension)
+                var image = new Bitmap(_originalWallpaperPath);
+                DebugLog($"Successfully loaded original wallpaper: {_originalWallpaperPath}");
+                return image;
+            }
+            catch (Exception ex)
+            {
+                DebugLog($"Failed to load original wallpaper: {ex.Message}");
+                // Try loading as different formats
+                try
+                {
+                    using (var fs = new FileStream(_originalWallpaperPath, FileMode.Open, FileAccess.Read))
+                    {
+                        var image = new Bitmap(Image.FromStream(fs));
+                        DebugLog($"Successfully loaded wallpaper using stream: {_originalWallpaperPath}");
+                        return image;
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    DebugLog($"Failed to load wallpaper using stream: {ex2.Message}");
+                }
+            }
+        }
+        
+        // If we couldn't load the original wallpaper, create a default one
+        var (screenWidth, screenHeight) = GetActualScreenResolution();
+        DebugLog("Using default background");
+        return CreateGradientBackground(screenWidth, screenHeight);
     }
 
     static Bitmap CreateGradientBackground(int width, int height)
