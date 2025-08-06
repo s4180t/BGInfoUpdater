@@ -20,18 +20,30 @@ A Windows application that automatically updates your desktop background with sy
 
 ## Project Structure
 
-```plaintext
-├── BGInfoUpdater.exe        # Main application executable
-├── setup-autostart.ps1      # PowerShell script for automatic startup
-├── BGInfo/                  # Directory for BGInfo executables
-│   └── Bginfo64.exe         # BGInfo executable (must be downloaded separately) 
-└── bginfo_temp/             # Directory for temporary data files
-    ├── ip.txt               # Current IP information
-    ├── lastupdated.txt      # Timestamp of last update
-    ├── location.txt         # Geographic location data
-    └── org.txt              # Organization information
+### Source Code
 
-Note: config.bgi must be created manually.
+```plaintext
+├── Program.cs              # Main application source
+├── BGInfoUpdater.csproj    # Project file
+├── BGInfoUpdater.sln       # Solution file
+├── README.md               # This documentation
+└── scripts/
+    └── setup-autostart.ps1 # PowerShell script for automatic startup
+```
+
+### Runtime Structure (After Installation)
+
+```plaintext
+├── BGInfoUpdater.exe       # Main application executable
+├── setup-autostart.ps1     # PowerShell script for automatic startup
+├── config.bgi              # BGInfo configuration file (create manually)
+├── BGInfo/                 # Directory for BGInfo executables
+│   └── Bginfo64.exe        # BGInfo executable (download separately)
+└── bginfo_temp/            # Directory for temporary data files
+    ├── ip.txt              # Current IP information
+    ├── lastupdated.txt     # Timestamp of last update
+    ├── location.txt        # Geographic location data
+    └── org.txt             # Organization information
 ```
 
 ## Installation

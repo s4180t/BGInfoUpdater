@@ -10,4 +10,11 @@
     <Version>1.0.0</Version>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="scripts\setup-autostart.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>setup-autostart.ps1</Link>
+    </None>
+  </ItemGroup>
+
 </Project>
