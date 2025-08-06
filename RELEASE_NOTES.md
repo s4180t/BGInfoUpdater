@@ -1,23 +1,30 @@
-# BGInfoUpdater v1.0.0
+# BGInfoUpdater v2.0.0
 
-First official release of BGInfoUpdater!
+🎉 **Complete rewrite** - No more BGInfo dependency!
+
+## What's New
+
+- **Self-contained** - Pure .NET solution, no external tools
+- **Smart wallpaper preservation** - Never lose your original background
+- **4K display support** - Auto-scaling for high-res screens
+- **Professional overlay** - Clean semi-transparent design
+- **Enhanced reliability** - Better error handling and performance
 
 ## Features
 
-- Automatic system information updates every 5 minutes
-- Real-time IP address information display
-- Location information integration
-- Silent background operation
+- Real-time IP geolocation display
+- ISP and location information
+- Auto-updates every 5 minutes
+- Taskbar-aware positioning
 - Windows startup integration
 
 ## Installation
 
-1. Download and install BGInfo from Microsoft Sysinternals
-2. Download the `BGInfoUpdater.zip` from this release
-3. Extract contents and run `setup-autostart.ps1` for automatic startup
-4. Create a `config.bgi` file using BGInfo configuration tool (see README for details)
+1. Download BGInfoUpdater.zip
+2. Extract and run BGInfoUpdater.exe
+3. Optional: Run setup-autostart.ps1 for startup
 
 ## Requirements
 
-- Windows operating system
+- Windows 10/11
 - .NET 8.0 Runtime
