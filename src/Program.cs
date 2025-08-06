@@ -220,7 +220,10 @@ class Program
                 }
                 
                 // Process the final image with system information overlay
-                ProcessFinalImage(finalImage, ip, location, org, lastUpdated, outputPath);
+                using (finalImage)
+                {
+                    ProcessFinalImage(finalImage, ip, location, org, lastUpdated, outputPath);
+                }
             }
         }
         catch (Exception ex)
@@ -315,23 +318,20 @@ class Program
             }
             
             // Save the image as BMP (Windows wallpaper compatible format)
-            using (finalImage)
+            try
             {
-                try
-                {
-                    finalImage.Save(outputPath, ImageFormat.Bmp);
-                }
-                catch (Exception saveEx)
-                {
-                    DebugLog($"Error saving image: {saveEx.Message}");
-                    // Try saving with a unique filename
-                    outputPath = Path.Combine(Path.GetTempPath(), $"wallpaper_{DateTime.Now:yyyyMMdd_HHmmss}.bmp");
-                    finalImage.Save(outputPath, ImageFormat.Bmp);
-                }
-                
-                // Set as wallpaper
-                SetWallpaper(outputPath);
+                finalImage.Save(outputPath, ImageFormat.Bmp);
             }
+            catch (Exception saveEx)
+            {
+                DebugLog($"Error saving image: {saveEx.Message}");
+                // Try saving with a unique filename
+                outputPath = Path.Combine(Path.GetTempPath(), $"wallpaper_{DateTime.Now:yyyyMMdd_HHmmss}.bmp");
+                finalImage.Save(outputPath, ImageFormat.Bmp);
+            }
+            
+            // Set as wallpaper
+            SetWallpaper(outputPath);
         }
         catch (Exception ex)
         {
