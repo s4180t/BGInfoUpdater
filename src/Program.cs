@@ -38,7 +38,7 @@ class Program
     static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 
     [DllImport("user32.dll")]
-    static extern bool EnumDisplaySettings(string lpszDeviceName, int iModeNum, ref DEVMODE lpDevMode);
+    static extern bool EnumDisplaySettings(string? lpszDeviceName, int iModeNum, ref DEVMODE lpDevMode);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct DEVMODE
@@ -377,7 +377,7 @@ class Program
         DEVMODE devMode = new DEVMODE();
         devMode.dmSize = (short)Marshal.SizeOf(devMode);
         
-        if (EnumDisplaySettings(null!, -1, ref devMode)) // -1 = current settings
+        if (EnumDisplaySettings(null, -1, ref devMode)) // -1 = current settings
         {
             // Get logical resolution for comparison
             int logicalWidth = GetSystemMetrics(SM_CXSCREEN);
